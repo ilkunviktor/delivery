@@ -1,4 +1,4 @@
-#include <vector>
+﻿#include <vector>
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -15,13 +15,13 @@ int main()
 	bool b = inputFile.is_open();
 	assert(inputFile.is_open());
 
-	int rows = 0;
-	int columns = 0;
-	int drones = 0;
-	int turns = 0;
-	int payload = 0;
-	int productTypes = 0;
-	vector<int> productWeights;
+	int rows = 0; // 1 ≤ number of rows ≤ 10000
+	int columns = 0; // 1 ≤ number of columns ≤ 10000
+	int drones = 0; // 1 ≤ D ≤ 1000
+	int turns = 0; // 1 ≤ deadline of the simulation ≤ 1000000
+	int payload = 0; // 1 ≤ maximum load of a drone ≤ 10000
+	int productTypes = 0; // 1 ≤ P ≤ 10000
+	vector<int> productWeights; // 1 ≤ weight ≤ maximum load of a drone 
 
 	struct warehouse
 	{
@@ -31,7 +31,14 @@ int main()
 	};
 
 	inputFile >> rows >> columns >> drones >> turns >> payload;
+	inputFile >> productTypes;
 
+	for (int i = 0; i < productTypes; ++i)
+	{
+		int productWeight = 0;
+		inputFile >> productWeight;
+		productWeights.emplace_back(productWeight);
+	}
 
 	inputFile.close();
 
