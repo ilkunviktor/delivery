@@ -1,4 +1,5 @@
 ﻿#include <vector>
+#include <map>
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -8,13 +9,7 @@ using namespace std;
 
 int main()
 {
-	// input
-	std::string dataPath = "../../data/";
-	ifstream inputFile;
-	inputFile.open(dataPath + "task.in");
-	bool b = inputFile.is_open();
-	assert(inputFile.is_open());
-
+	// Types
 	// 1 ≤ number of rows ≤ 10000
 	// 1 ≤ number of columns ≤ 10000
 	// 1 ≤ D drones ≤ 1000
@@ -22,6 +17,8 @@ int main()
 	// 1 ≤ P product types ≤ 10000
 	// 1 ≤ W warehouses ≤ 10000
 	// value of products by type in warehouse => 0 ≤ number of items ≤ 10000
+	// 1 ≤ C custom orders ≤ 10000
+	// 1 ≤ L ordered products count in 1 order <= 10000
 	using uint_t = uint16_t; 
 	// 1 ≤ deadline of the simulation ≤ 1000000
 	using turns_t = uint32_t;
@@ -35,14 +32,36 @@ int main()
 	vector<uint_t> productWeights; // 1 ≤ weight ≤ maximum load of a drone
 	uint_t warehousesCount = 0;
 
-	struct Warehouse
+	struct Point
 	{
 		uint_t row = 0;
 		uint_t column = 0;
-		vector<uint_t> productsCounts; // id => type, value => number of items
+	};
+
+	struct Warehouse
+	{
+		Point location;
+		vector<uint_t> productsCounts; // id => product type, value => number of items
 	};
 
 	vector<Warehouse> warehouses;
+	uint_t ordersCount;
+
+	struct Order
+	{
+		Point location;
+		uint_t productsCount;
+		map<uint_t, uint_t> items; // key => product type, value => count
+	};
+
+	vector<Order> orders;
+
+	// input
+	std::string dataPath = "../../data/";
+	ifstream inputFile;
+	inputFile.open(dataPath + "task.in");
+	bool b = inputFile.is_open();
+	assert(inputFile.is_open());
 
 	inputFile >> rows >> columns >> drones >> turns >> payload;
 	inputFile >> productTypesCount;
@@ -59,7 +78,8 @@ int main()
 	for (uint_t i = 0; i < warehousesCount; ++i)
 	{
 		Warehouse warehouse;
-		inputFile >> warehouse.row >> warehouse.column;
+		inputFile >> warehouse.location.row;
+		inputFile >> warehouse.location.column;
 
 		for (uint_t j = 0; j < productTypesCount; ++j)
 		{
@@ -69,6 +89,25 @@ int main()
 		}
 
 		warehouses.emplace_back(warehouse);
+	}
+
+	inputFile >> ordersCount;
+
+	for (uint_t i = 0; i < ordersCount; ++i)
+	{
+		Order order;
+		inputFile >> order.location.row;
+		inputFile >> order.location.column;
+		inputFile >> order.productsCount;
+
+		for (uint_t j = 0; j < order.productsCount; ++j)
+		{
+			uint_t productType = 0;
+			inputFile >> productType;
+			++order.items[productType];
+		}
+
+		orders.emplace_back(order);
 	}
 
 	inputFile.close();
