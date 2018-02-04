@@ -25,7 +25,7 @@ int main()
 
 	uint_t rows = 0;
 	uint_t columns = 0;
-	uint_t drones = 0; 
+	uint_t dronesCount = 0; 
 	turns_t turns = 0;
 	uint_t payload = 0;
 	uint_t productTypesCount = 0;
@@ -54,16 +54,17 @@ int main()
 		map<uint_t, uint_t> items; // key => product type, value => count
 	};
 
+
 	vector<Order> orders;
 
 	// input
 	std::string dataPath = "../../data/";
-	ifstream inputFile;
+	ifstream inputFile;	
 	inputFile.open(dataPath + "task.in");
 	bool b = inputFile.is_open();
 	assert(inputFile.is_open());
 
-	inputFile >> rows >> columns >> drones >> turns >> payload;
+	inputFile >> rows >> columns >> dronesCount >> turns >> payload;
 	inputFile >> productTypesCount;
 
 	for (uint_t i = 0; i < productTypesCount; ++i)
@@ -113,7 +114,60 @@ int main()
 	inputFile.close();
 
 	// solve
+	struct drone
+	{
+		Point location;
+		int focusedOnType;
+		int endOfCurrentMovement;
+		vector<std::string> commands;
+	};
 
+	vector<drone> drones;
+	for (int i=0; i<dronesCount; i++)
+	{
+		drones[i].location = warehouses[i].location;
+		drones[i].focusedOnType = 0;
+		drones[i].endOfCurrentMovement = 0;
+	}
+
+	turns_t currentTurn = 0;
+	while (currentTurn < turns)
+	{
+		for (int i = 0; i < dronesCount; i++)
+		{
+			int currentTypeNeeded = 0;
+			while (currentTypeNeeded == 0)
+			{
+				for (int j = 0; j < ordersCount; j++)
+				{
+					currentTypeNeeded += orders[j].items[drones[i].focusedOnType];
+				}
+
+				if (currentTypeNeeded == 0)
+				{
+					drones[i].focusedOnType++;
+					if (drones[i].focusedOnType == productTypesCount - 1)
+					{
+						break;
+					}
+				}
+			}
+
+			if (currentTypeNeeded > 0)
+			{				
+				int maxTypeCount = payload / productWeights[drones[i].focusedOnType];				
+				int itemsToLoad = currentTypeNeeded > maxTypeCount ? maxTypeCount : currentTypeNeeded;
+
+				// find warehouse to load type
+				for (int w = 0; w < warehousesCount; w ++)
+				{
+					
+				}
+			}
+		}
+
+		currentTurn++;
+	}											
 
 	//output
 	ofstream resultFile;
