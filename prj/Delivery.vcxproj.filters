@@ -9,5 +9,22 @@
     <ClCompile Include="..\sources\main.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\sources\Validation.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Utils.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\sources\Validation.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Utils.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\StdAfx.h">
+      <Filter>sources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

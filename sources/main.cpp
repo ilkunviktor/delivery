@@ -1,9 +1,6 @@
-﻿#include <vector>
-#include <map>
-#include <cmath>
-#include <iostream>
-#include <fstream>
-#include <assert.h>
+﻿#include "StdAfx.h"
+#include "Validation.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -60,7 +57,6 @@ int main()
 	std::string dataPath = "../../data/";
 	ifstream inputFile;
 	inputFile.open(dataPath + "task.in");
-	bool b = inputFile.is_open();
 	assert(inputFile.is_open());
 
 	inputFile >> rows >> columns >> drones >> turns >> payload;
@@ -115,11 +111,26 @@ int main()
 	// solve
 
 
-	//output
+	// output
+	string timeCurrentStr = GetTimeStr();
+	string resultFileName = dataPath + "result_" + timeCurrentStr + ".out";
 	ofstream resultFile;
-	resultFile.open(dataPath + "result.out");
-	resultFile << "Writing this to a file 1.\n";
+	resultFile.open(resultFileName);
+	assert(resultFile.is_open());
+	resultFile << "9" << endl;
+	resultFile << "0 L 0 0 1" << endl;
+	resultFile << "0 L 0 1 1" << endl;
+	resultFile << "0 D 0 0 1" << endl;
+	resultFile << "0 L 1 2 1" << endl;
+	resultFile << "0 D 0 2 1" << endl;
+	resultFile << "1 L 1 2 1" << endl;
+	resultFile << "1 D 2 2 1" << endl;
+	resultFile << "1 L 0 0 1" << endl;
+	resultFile << "1 D 1 0 1" << endl;
 	resultFile.close();
+
+	// validation
+	Validate(resultFileName);
 
 	return 0;
 }
