@@ -20,13 +20,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sources\main.cpp" />
+    <ClCompile Include="..\sources\Reader.cpp" />
+    <ClCompile Include="..\sources\Solver.cpp" />
     <ClCompile Include="..\sources\Utils.cpp" />
-    <ClCompile Include="..\sources\Validation.cpp" />
+    <ClCompile Include="..\sources\Validator.cpp" />
+    <ClCompile Include="..\sources\Writer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\sources\Reader.h" />
+    <ClInclude Include="..\sources\Result.h" />
+    <ClInclude Include="..\sources\Solver.h" />
     <ClInclude Include="..\sources\StdAfx.h" />
+    <ClInclude Include="..\sources\Input.h" />
     <ClInclude Include="..\sources\Utils.h" />
-    <ClInclude Include="..\sources\Validation.h" />
+    <ClInclude Include="..\sources\Validator.h" />
+    <ClInclude Include="..\sources\Writer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

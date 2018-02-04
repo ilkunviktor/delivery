@@ -11,3 +11,5 @@
 #include <string>
 #include <ctime>
 #include <iomanip>
+
+using namespace std;

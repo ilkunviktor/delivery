@@ -1,5 +1,5 @@
 #pragma once
 #include <string>
 
-std::string GetTimeStr();
+string GetTimeStr();
 

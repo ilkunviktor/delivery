@@ -1,9 +1,9 @@
 #include "StdAfx.h"
-#include "Validation.h"
+#include "Validator.h"
 
 using namespace std;
 
-bool Validate(const std::string& validationFileName)
+bool Validate(const string& validationFileName)
 {
 	ifstream validationFile;
 	validationFile.open(validationFileName);

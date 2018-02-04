@@ -9,21 +9,45 @@
     <ClCompile Include="..\sources\main.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\sources\Validation.cpp">
+    <ClCompile Include="..\sources\Utils.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\sources\Utils.cpp">
+    <ClCompile Include="..\sources\Validator.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Solver.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Reader.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Writer.cpp">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\sources\Validation.h">
-      <Filter>sources</Filter>
-    </ClInclude>
     <ClInclude Include="..\sources\Utils.h">
       <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="..\sources\StdAfx.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Input.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Validator.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Solver.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Reader.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Result.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Writer.h">
       <Filter>sources</Filter>
     </ClInclude>
   </ItemGroup>
