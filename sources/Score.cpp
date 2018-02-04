@@ -8,7 +8,7 @@ uint_big_t ScoreFunc(const uint_big_t& turns, const uint_big_t& deliverTurn)
 	return score;
 }
 
-uint_big_t Score(const Init& init, const State& stateLast)
+uint_big_t Score(const State& stateLast)
 {
 	uint_big_t result = 0;
 
@@ -16,7 +16,7 @@ uint_big_t Score(const Init& init, const State& stateLast)
 	{
 		if (order.state == OrderState::Delivered)
 		{
-			result += ScoreFunc(init.turns, order.deliverTurn);
+			result += ScoreFunc(stateLast.turnsCurrent, order.deliverTurn);
 		}
 	}
 

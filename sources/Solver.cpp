@@ -21,13 +21,11 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 	droneInit.location = input.warehouses[0].location;
 	vector<Drone> drones(input.dronesCount, droneInit);
 
-	uint_big_t turnCurrent = 0;
-
-	while (turnCurrent < input.turns)
+	while (stateLast->turnsCurrent < input.turns)
 	{
 		for (uint_t i = 0; i < input.dronesCount; ++i)
 		{
-			if (drones[i].endOfCurrentMovement == turnCurrent)
+			if (drones[i].endOfCurrentMovement == stateLast->turnsCurrent)
 			{
 				uint_t productCountByType = 0;
 
@@ -104,7 +102,7 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 							if (orderComplete)
 							{
 								stateLast->ordersCurrent[j].state = OrderState::Delivered;
-								stateLast->ordersCurrent[j].deliverTurn = turnCurrent;
+								stateLast->ordersCurrent[j].deliverTurn = stateLast->turnsCurrent;
 							}
 
 							// add deliver command
@@ -127,7 +125,7 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 			}			
 		}
 
-		turnCurrent++;
+		stateLast->turnsCurrent++;
 	}
 
 	for (auto&& drone : drones)

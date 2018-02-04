@@ -19,7 +19,7 @@ int main()
 	string resultFileName = dataPath + "result_" + timeCurrentStr + ".out";
 	Write(*result, resultFileName);
 	// score
-	uint_t score = Score(*init, *stateLast);
+	uint_t score = Score(*stateLast);
 	cout << "score: " << score << endl;
 	system("pause");
 

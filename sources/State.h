@@ -13,4 +13,5 @@ struct Drone
 struct State
 {
 	vector<Order> ordersCurrent;
+	uint_big_t turnsCurrent = 0;
 };
