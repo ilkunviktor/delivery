@@ -22,6 +22,7 @@
     <ClCompile Include="..\sources\main.cpp" />
     <ClCompile Include="..\sources\Reader.cpp" />
     <ClCompile Include="..\sources\Result.cpp" />
+    <ClCompile Include="..\sources\Score.cpp" />
     <ClCompile Include="..\sources\Solver.cpp" />
     <ClCompile Include="..\sources\Utils.cpp" />
     <ClCompile Include="..\sources\Writer.cpp" />
@@ -29,6 +30,7 @@
   <ItemGroup>
     <ClInclude Include="..\sources\Reader.h" />
     <ClInclude Include="..\sources\Result.h" />
+    <ClInclude Include="..\sources\Score.h" />
     <ClInclude Include="..\sources\Solver.h" />
     <ClInclude Include="..\sources\State.h" />
     <ClInclude Include="..\sources\StdAfx.h" />

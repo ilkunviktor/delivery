@@ -1,45 +1,45 @@
 #include "StdAfx.h"
 #include "Reader.h"
 
-Init Read(string inputFilename)
+shared_ptr<Init> Read(const string& inputFilename)
 {
-	Init in;
+	shared_ptr<Init> in(new Init);
 
 	ifstream inputFile;
 	inputFile.open(inputFilename);
 	assert(inputFile.is_open());
 
-	inputFile >> in.rows >> in.columns >> in.dronesCount >> in.turns >> in.payload;
-	inputFile >> in.productTypesCount;
+	inputFile >> in->rows >> in->columns >> in->dronesCount >> in->turns >> in->payload;
+	inputFile >> in->productTypesCount;
 
-	for (uint_t i = 0; i < in.productTypesCount; ++i)
+	for (uint_t i = 0; i < in->productTypesCount; ++i)
 	{
 		uint_t productWeight = 0;
 		inputFile >> productWeight;
-		in.productWeights.emplace_back(productWeight);
+		in->productWeights.emplace_back(productWeight);
 	}
 
-	inputFile >> in.warehousesCount;
+	inputFile >> in->warehousesCount;
 
-	for (uint_t i = 0; i < in.warehousesCount; ++i)
+	for (uint_t i = 0; i < in->warehousesCount; ++i)
 	{
 		Warehouse warehouse;
 		inputFile >> warehouse.location.row;
 		inputFile >> warehouse.location.column;
 
-		for (uint_t j = 0; j < in.productTypesCount; ++j)
+		for (uint_t j = 0; j < in->productTypesCount; ++j)
 		{
 			uint_t productTypeCount = 0;
 			inputFile >> productTypeCount;
 			warehouse.productsCounts.emplace_back(productTypeCount);
 		}
 
-		in.warehouses.emplace_back(warehouse);
+		in->warehouses.emplace_back(warehouse);
 	}
 
-	inputFile >> in.ordersCount;
+	inputFile >> in->ordersCount;
 
-	for (uint_t i = 0; i < in.ordersCount; ++i)
+	for (uint_t i = 0; i < in->ordersCount; ++i)
 	{
 		Order order;
 		inputFile >> order.location.row;
@@ -53,7 +53,7 @@ Init Read(string inputFilename)
 			++order.items[productType];
 		}
 
-		in.orders.emplace_back(order);
+		in->orders.emplace_back(order);
 	}
 
 	inputFile.close();

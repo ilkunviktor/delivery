@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Solver.h"
 
-uint_t distance(Point point1, Point point2)
+uint_t CalcDistance(const Point& point1, const Point& point2)
 {
 	int diffRow = point1.row - point2.row;
 	int diffHeight = point2.column + point2.column;
@@ -10,16 +10,18 @@ uint_t distance(Point point1, Point point2)
 	return dist;
 }
 
-Result Solve(Init input)
+void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& stateLast)
 {
-	
-	Result result;
+	result = make_shared<Result>();
+	stateLast = make_shared<State>();
+
+	stateLast->ordersCurrent = input.orders;
 
 	Drone droneInit;
 	droneInit.location = input.warehouses[0].location;
 	vector<Drone> drones(input.dronesCount, droneInit);
 
-	turns_t turnCurrent = 0;
+	uint_big_t turnCurrent = 0;
 
 	while (turnCurrent < input.turns)
 	{
@@ -33,7 +35,7 @@ Result Solve(Init input)
 				{
 					for (uint_t j = 0; j < input.ordersCount; j++)
 					{
-						productCountByType += input.orders[j].items[drones[i].focusedOnType];
+						productCountByType += stateLast->ordersCurrent[j].items[drones[i].focusedOnType];
 					}
 
 					if (productCountByType == 0)
@@ -68,7 +70,7 @@ Result Solve(Init input)
 							command.productType = drones[i].focusedOnType;
 							command.productCount = droneLoadedItems;
 							drones[i].commands.emplace_back(command);
-							drones[i].endOfCurrentMovement += distance(&drones[i].location,	&input.warehouses[w].location) + 1;
+							drones[i].endOfCurrentMovement += CalcDistance(drones[i].location, input.warehouses[w].location) + 1;
 							drones[i].location.row = input.warehouses[w].location.row;
 							drones[i].location.column = input.warehouses[w].location.column;
 
@@ -77,16 +79,34 @@ Result Solve(Init input)
 					}
 
 					// find nearest orders to deliver
-					vector<uint_t> ordersToDeliver;
-
 					for (uint_t j = 0; j < input.ordersCount; ++j)
 					{
-						if (input.orders[j].items[drones[i].focusedOnType] > 0)
+						if (stateLast->ordersCurrent[j].items[drones[i].focusedOnType] > 0)
 						{
 							uint_t deliveredItems = min(
-								input.orders[j].items[drones[i].focusedOnType], droneLoadedItems);
+								stateLast->ordersCurrent[j].items[drones[i].focusedOnType], droneLoadedItems);
 							droneLoadedItems -= deliveredItems;
-							input.orders[j].items[drones[i].focusedOnType] = input.orders[j].items[drones[i].focusedOnType] - deliveredItems;
+							stateLast->ordersCurrent[j].items[drones[i].focusedOnType] = stateLast->ordersCurrent[j].items[drones[i].focusedOnType] - deliveredItems;
+
+							// check order complete
+							bool orderComplete = true;
+
+							for (const auto& item : stateLast->ordersCurrent[j].items)
+							{
+								if (item.second)
+								{
+									orderComplete = false;
+
+									break;
+								}
+							}
+
+							if (orderComplete)
+							{
+								stateLast->ordersCurrent[j].state = OrderState::Delivered;
+								stateLast->ordersCurrent[j].deliverTurn = turnCurrent;
+							}
+
 							// add deliver command
 							Command command;
 							command.droneId = i;
@@ -95,7 +115,7 @@ Result Solve(Init input)
 							command.productType = drones[i].focusedOnType;
 							command.productCount = deliveredItems;
 							drones[i].commands.emplace_back(command);
-							drones[i].endOfCurrentMovement += distance(drones[i].location, input.orders[j].location) + 1;
+							drones[i].endOfCurrentMovement += CalcDistance(drones[i].location, stateLast->ordersCurrent[j].location) + 1;
 
 							if (droneLoadedItems == 0)
 							{
@@ -112,10 +132,8 @@ Result Solve(Init input)
 
 	for (auto&& drone : drones)
 	{
-		result.commands.insert(result.commands.begin(), drone.commands.begin(), drone.commands.end());
+		result->commands.insert(result->commands.begin(), drone.commands.begin(), drone.commands.end());
 	}
 
-	result.commandsCount = (uint_t)result.commands.size();
-
-	return result;
+	result->commandsCount = (uint_t)result->commands.size();
 }

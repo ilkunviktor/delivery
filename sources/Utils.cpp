@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Utils.h"
 
-string GetTimeStr()
+string CalcTimeStr()
 {
 	time_t t = time(nullptr);
 	tm* stm = localtime(&t);

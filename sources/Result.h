@@ -10,7 +10,7 @@ struct Command
 	uint_t productCount = 0;
 	uint_t turnsCount = 0;
 
-	string Str();
+	string Str() const;
 };
 
 struct Result

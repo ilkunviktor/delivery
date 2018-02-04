@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 #include "Writer.h"
+#include "Result.h"
 
-void Write(Result result, string resultFilename)
+void Write(const Result& result, const string& resultFilename)
 {
 	ofstream resultFile;
 	resultFile.open(resultFilename);

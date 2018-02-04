@@ -1,8 +1,7 @@
-﻿#pragma once
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "Result.h"
 
-string Command::Str()
+string Command::Str() const
 {
 	string actionStr;
 

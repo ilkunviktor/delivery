@@ -12,5 +12,7 @@
 #include <ctime>
 #include <iomanip>
 #include <algorithm>
+#include <memory>
+#include <numeric>
 
 using namespace std;

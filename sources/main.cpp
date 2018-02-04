@@ -1,23 +1,27 @@
 ﻿#include "StdAfx.h"
-#include "Solver.h"
 #include "Reader.h"
-#include "Utils.h"
+#include "Solver.h"
 #include "Writer.h"
-
+#include "Utils.h"
+#include "Score.h"
 int main()
 {
 	// input
 	string dataPath = "../../data/";
 	string inputFilename = dataPath + "task.in";
-	Init input = Read(inputFilename);
+	shared_ptr<Init> init = Read(inputFilename);
 	// solve
-	Result result = Solve(input);
+	shared_ptr<Result> result;
+	shared_ptr<State> stateLast;
+	Solve(*init, result, stateLast);
 	// output
-	string timeCurrentStr = GetTimeStr();
+	string timeCurrentStr = CalcTimeStr();
 	string resultFileName = dataPath + "result_" + timeCurrentStr + ".out";
-	Write(result, resultFileName);
+	Write(*result, resultFileName);
 	// score
-	//...
+	uint_t score = Score(*init, *stateLast);
+	cout << "score: " << score << endl;
+	system("pause");
 
 	return 0;
 }

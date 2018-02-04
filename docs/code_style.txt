@@ -1,7 +1,7 @@
-no Forward declaration!
-no smart ptr!
-no &!
-no const!
+less Forward declaration!
+less smart ptr!
+less &!
+less const!
 no namespaces!
 no Get Set methods!
 no auto (only in for(auto&& a : range))!

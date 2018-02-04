@@ -1,7 +1,7 @@
 #pragma once
 #include "Init.h"
 
-Init Read(string inputFilename);
+shared_ptr<Init> Read(const string& inputFilename);
 
 
 

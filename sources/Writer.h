@@ -1,7 +1,8 @@
 #pragma once
-#include "Result.h"
 
-void Write(Result result, string resultFilename);
+struct Result;
+
+void Write(const Result& result, const string& resultFilename);
 
 
 
