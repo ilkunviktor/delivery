@@ -29,7 +29,7 @@ struct Drone
 {
 	Point location;
 	int focusedOnType;
-	int endOfCurrentMovement;
+	turns_t endOfCurrentMovement;
 	vector<string> commands;
 };
 

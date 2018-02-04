@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Solver.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -14,8 +15,8 @@ Result Solve(Input& input)
 {
 	Result result;
 	vector<Drone> drones = vector<Drone>(input.dronesCount);
-
-	for (int i = 0; i < input.dronesCount; i++)
+	
+	for (int i = 0; i<input.dronesCount; i++)
 	{
 		drones[i].location = input.warehouses[0].location;
 		drones[i].focusedOnType = 0;
@@ -23,53 +24,77 @@ Result Solve(Input& input)
 	}
 
 	turns_t currentTurn = 0;
-
 	while (currentTurn < input.turns)
 	{
 		for (int i = 0; i < input.dronesCount; i++)
 		{
-			int currentTypeNeeded = 0;
-
-			while (currentTypeNeeded == 0)
+			if (drones[i].endOfCurrentMovement == currentTurn)
 			{
-				for (int j = 0; j < input.ordersCount; j++)
+				int currentTypeNeeded = 0;
+				while (currentTypeNeeded == 0)
 				{
-					currentTypeNeeded += input.orders[j].items[drones[i].focusedOnType];
+					for (int j = 0; j < input.ordersCount; j++)
+					{
+						currentTypeNeeded += input.orders[j].items[drones[i].focusedOnType];
+					}
+
+					if (currentTypeNeeded == 0)
+					{
+						drones[i].focusedOnType++;
+						if (drones[i].focusedOnType == input.productTypesCount)
+						{
+							break;
+						}
+					}
 				}
 
-				if (currentTypeNeeded == 0)
+				if (currentTypeNeeded > 0)
 				{
-					drones[i].focusedOnType++;
+					uint_t maxTypeCount = input.payload / input.productWeights[drones[i].focusedOnType];
+					uint_t droneLoadedItems = currentTypeNeeded > maxTypeCount ? maxTypeCount : currentTypeNeeded;
 
-					if (drones[i].focusedOnType == input.productTypesCount - 1)
+					// find warehouse to load type
+					for (int w = 0; w < input.warehousesCount; w++)
 					{
-						break;
+						if (input.warehouses[w].productsCounts[drones[i].focusedOnType] >= 0)
+						{
+							droneLoadedItems = min(input.warehouses[w].productsCounts[drones[i].focusedOnType], droneLoadedItems);
+							// add load command
+							drones[i].commands.emplace_back(to_string(i) + " L " + to_string(w) + " " + to_string(drones[i].focusedOnType) + " " + to_string(droneLoadedItems));
+							drones[i].endOfCurrentMovement += distance(drones[i].location, input.warehouses[w].location) + 1;
+							drones[i].location.row = input.warehouses[w].location.row;
+							drones[i].location.column = input.warehouses[w].location.column;
+							break;
+						}						
+					}
+
+					// find nearest orders to deliver
+					vector<int> ordersToDeliver;
+					for (int j = 0; j < input.ordersCount; j++)
+					{
+						if (input.orders[j].items[drones[i].focusedOnType]>0)
+						{
+							uint_t deliveredItems = input.orders[j].items[drones[i].focusedOnType] < droneLoadedItems ? input.orders[j].items[drones[i].focusedOnType] : droneLoadedItems;
+							droneLoadedItems -= deliveredItems;
+							input.orders[j].items[drones[i].focusedOnType] = input.orders[j].items[drones[i].focusedOnType] - deliveredItems;
+							// add deliver command
+							drones[i].commands.emplace_back(to_string(i) + " D " + to_string(j) + " " + to_string(drones[i].focusedOnType) + " " + to_string(deliveredItems));
+							drones[i].endOfCurrentMovement += distance(drones[i].location, input.orders[j].location) + 1;
+							if (droneLoadedItems == 0)
+							{
+								break;
+							}
+						}
 					}
 				}
 			}
-
-			if (currentTypeNeeded > 0)
+			else
 			{
-				int maxTypeCount = input.payload / input.productWeights[drones[i].focusedOnType];
-				int itemsToLoad = currentTypeNeeded > maxTypeCount ? maxTypeCount : currentTypeNeeded;
-
-				// find warehouse to load type
-				for (int w = 0; w < input.warehousesCount; w++)
-				{
-					int min = 0;
-
-					if (input.warehouses[w].productsCounts[drones[i].focusedOnType] >= itemsToLoad)
-					{
-						drones[i].commands.emplace_back(to_string(i) + " L " + to_string(w) + " " + to_string(drones[i].focusedOnType) + " " + to_string(itemsToLoad));
-						drones[i].endOfCurrentMovement += distance(drones[i].location, input.warehouses[w].location) + 1;
-
-						break;
-					}
-				}
+				drones[i].endOfCurrentMovement = input.turns;
 			}
 		}
 
-		currentTurn++;
+		currentTurn++;	
 	}
 
 	return result;
