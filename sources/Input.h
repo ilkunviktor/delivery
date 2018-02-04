@@ -28,8 +28,8 @@ struct Warehouse
 struct Drone
 {
 	Point location;
-	int focusedOnType;
-	turns_t endOfCurrentMovement;
+	uint_t focusedOnType = 0;
+	turns_t endOfCurrentMovement = 0;
 	vector<string> commands;
 };
 
