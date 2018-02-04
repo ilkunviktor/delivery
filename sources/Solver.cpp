@@ -8,7 +8,7 @@ int distance(Point point1, Point point2)
 {
 	int diffRow = point1.row - point2.row;
 	int diffHeight = point2.column + point2.column;
-	return int(round(sqrt(diffRow) + sqrt(diffHeight)));
+	return ceil(sqrt(diffRow) + sqrt(diffHeight));
 }
 
 Result Solve(Input& input)
@@ -40,6 +40,7 @@ Result Solve(Input& input)
 						drones[i].focusedOnType++;
 						if (drones[i].focusedOnType == input.productTypesCount)
 						{
+							drones[i].endOfCurrentMovement = input.turns;
 							break;
 						}
 					}
@@ -48,7 +49,7 @@ Result Solve(Input& input)
 				if (productCountByType > 0)
 				{
 					uint_t maxTypeCount = input.payload / input.productWeights[drones[i].focusedOnType];
-					uint_t droneLoadedItems = productCountByType > maxTypeCount ? maxTypeCount : productCountByType;
+					uint_t droneLoadedItems = min(productCountByType, maxTypeCount);
 
 					// find warehouse to load type
 					for (int w = 0; w < input.warehousesCount; w++)
@@ -72,7 +73,7 @@ Result Solve(Input& input)
 					{
 						if (input.orders[j].items[drones[i].focusedOnType] > 0)
 						{
-							uint_t deliveredItems = input.orders[j].items[drones[i].focusedOnType] < droneLoadedItems ? input.orders[j].items[drones[i].focusedOnType] : droneLoadedItems;
+							uint_t deliveredItems = min(input.orders[j].items[drones[i].focusedOnType], droneLoadedItems);
 							droneLoadedItems -= deliveredItems;
 							input.orders[j].items[drones[i].focusedOnType] = input.orders[j].items[drones[i].focusedOnType] - deliveredItems;
 							// add deliver command
@@ -85,11 +86,7 @@ Result Solve(Input& input)
 						}
 					}
 				}
-			}
-			else
-			{
-				drones[i].endOfCurrentMovement = input.turns;
-			}
+			}			
 		}
 
 		turnCurrent++;
