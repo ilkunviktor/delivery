@@ -97,5 +97,16 @@ Result Solve(Input& input)
 		currentTurn++;	
 	}
 
+	int commands = 0;
+	for (int i =0; i< input.dronesCount; i++)
+	{		
+		for (auto &command : drones[i].commands)
+		{
+			commands++;
+			result.commands.emplace_back(command);
+		}		
+	}	
+
+	result.commandsCount = commands;
 	return result;
 }
