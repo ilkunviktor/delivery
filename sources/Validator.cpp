@@ -3,7 +3,7 @@
 
 using namespace std;
 
-bool Validate(const string& validationFileName)
+bool Validate(Result)
 {
 	ifstream validationFile;
 	validationFile.open(validationFileName);

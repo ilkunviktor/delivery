@@ -1,18 +1,16 @@
 #include "StdAfx.h"
 #include "Writer.h"
 
-using namespace std;
-
-void Write(const Result& result, const string& resultFilename)
+void Write(Result result, string resultFilename)
 {
 	ofstream resultFile;
 	resultFile.open(resultFilename);
 	assert(resultFile.is_open());
 	resultFile << result.commandsCount << endl;
 
-	for (const auto& command : result.commands)
+	for (auto&& command : result.commands)
 	{
-		resultFile << command << endl;
+		resultFile << command.Str() << endl;
 	}
 		
 	resultFile.close();

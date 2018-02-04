@@ -11,5 +11,6 @@
 #include <string>
 #include <ctime>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;

@@ -13,6 +13,14 @@ using uint_t = uint16_t;
 // 1 ≤ deadline of the simulation ≤ 1000000
 using turns_t = uint32_t;
 
+enum class Action
+{
+	Load,
+	Deliver,
+	Unload,
+	Wait
+};
+
 struct Point
 {
 	uint_t row = 0;
@@ -25,14 +33,6 @@ struct Warehouse
 	vector<uint_t> productsCounts; // id => product type, value => number of items
 };
 
-struct Drone
-{
-	Point location;
-	uint_t focusedOnType = 0;
-	turns_t endOfCurrentMovement = 0;
-	vector<string> commands;
-};
-
 struct Order
 {
 	Point location;
@@ -40,7 +40,7 @@ struct Order
 	map<uint_t, uint_t> items; // key => product type, value => count
 };
 
-struct Input
+struct Init
 {
 	uint_t rows = 0;
 	uint_t columns = 0;
@@ -54,3 +54,4 @@ struct Input
 	uint_t ordersCount;
 	vector<Order> orders;
 };
+

@@ -1,7 +1,7 @@
 #pragma once
-#include "Input.h"
+#include "Init.h"
 
-Input Read(const string& inputFilename);
+Init Read(string inputFilename);
 
 
 

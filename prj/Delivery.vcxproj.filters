@@ -12,9 +12,6 @@
     <ClCompile Include="..\sources\Utils.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\sources\Validator.cpp">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\sources\Solver.cpp">
       <Filter>sources</Filter>
     </ClCompile>
@@ -24,18 +21,15 @@
     <ClCompile Include="..\sources\Writer.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\sources\Result.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sources\Utils.h">
       <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="..\sources\StdAfx.h">
-      <Filter>sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sources\Input.h">
-      <Filter>sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sources\Validator.h">
       <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="..\sources\Solver.h">
@@ -48,6 +42,12 @@
       <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="..\sources\Writer.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Init.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\State.h">
       <Filter>sources</Filter>
     </ClInclude>
   </ItemGroup>

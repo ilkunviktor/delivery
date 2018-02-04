@@ -1,0 +1,10 @@
+no Forward declaration!
+no smart ptr!
+no &!
+no const!
+no namespaces!
+no Get Set methods!
+no auto (only in for(auto&& a : range))!
+no static_cast, just (type_t)a
+
+this all only for optimizations, after completing main task!

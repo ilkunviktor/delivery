@@ -1,7 +1,7 @@
 #pragma once
-#include "Result.h"
+#include "State.h"
 
-int distance(Point point1, Point point2);
+uint_t Distance(Point point1, Point point2);
 
-Result Solve(Input& input);
+Result Solve(Init input);
 

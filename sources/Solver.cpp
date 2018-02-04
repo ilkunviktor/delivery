@@ -1,19 +1,20 @@
 #include "StdAfx.h"
 #include "Solver.h"
-#include <algorithm>
 
-using namespace std;
-
-int distance(Point point1, Point point2)
+uint_t distance(Point point1, Point point2)
 {
 	int diffRow = point1.row - point2.row;
 	int diffHeight = point2.column + point2.column;
-	return ceil(sqrt(diffRow) + sqrt(diffHeight));
+	uint_t dist = (uint_t)ceil(sqrt(diffRow) + sqrt(diffHeight));
+
+	return dist;
 }
 
-Result Solve(Input& input)
+Result Solve(Init input)
 {
+	
 	Result result;
+
 	Drone droneInit;
 	droneInit.location = input.warehouses[0].location;
 	vector<Drone> drones(input.dronesCount, droneInit);
@@ -42,6 +43,7 @@ Result Solve(Input& input)
 						if (drones[i].focusedOnType == input.productTypesCount)
 						{
 							drones[i].endOfCurrentMovement = input.turns;
+
 							break;
 						}
 					}
@@ -59,8 +61,14 @@ Result Solve(Input& input)
 						{
 							droneLoadedItems = min(input.warehouses[w].productsCounts[drones[i].focusedOnType], droneLoadedItems);
 							// add load command
-							drones[i].commands.emplace_back(to_string(i) + " L " + to_string(w) + " " + to_string(drones[i].focusedOnType) + " " + to_string(droneLoadedItems));
-							drones[i].endOfCurrentMovement += distance(drones[i].location, input.warehouses[w].location) + 1;
+							Command command;
+							command.droneId = i;
+							command.action = Action::Load;
+							command.objectId = w;
+							command.productType = drones[i].focusedOnType;
+							command.productCount = droneLoadedItems;
+							drones[i].commands.emplace_back(command);
+							drones[i].endOfCurrentMovement += distance(&drones[i].location,	&input.warehouses[w].location) + 1;
 							drones[i].location.row = input.warehouses[w].location.row;
 							drones[i].location.column = input.warehouses[w].location.column;
 
@@ -71,15 +79,22 @@ Result Solve(Input& input)
 					// find nearest orders to deliver
 					vector<uint_t> ordersToDeliver;
 
-					for (uint_t j = 0; j < input.ordersCount; j++)
+					for (uint_t j = 0; j < input.ordersCount; ++j)
 					{
 						if (input.orders[j].items[drones[i].focusedOnType] > 0)
 						{
-							uint_t deliveredItems = min(input.orders[j].items[drones[i].focusedOnType], droneLoadedItems);
+							uint_t deliveredItems = min(
+								input.orders[j].items[drones[i].focusedOnType], droneLoadedItems);
 							droneLoadedItems -= deliveredItems;
 							input.orders[j].items[drones[i].focusedOnType] = input.orders[j].items[drones[i].focusedOnType] - deliveredItems;
 							// add deliver command
-							drones[i].commands.emplace_back(to_string(i) + " D " + to_string(j) + " " + to_string(drones[i].focusedOnType) + " " + to_string(deliveredItems));
+							Command command;
+							command.droneId = i;
+							command.action = Action::Deliver;
+							command.objectId = j;
+							command.productType = drones[i].focusedOnType;
+							command.productCount = deliveredItems;
+							drones[i].commands.emplace_back(command);
 							drones[i].endOfCurrentMovement += distance(drones[i].location, input.orders[j].location) + 1;
 
 							if (droneLoadedItems == 0)
@@ -95,17 +110,12 @@ Result Solve(Input& input)
 		turnCurrent++;
 	}
 
-	int commands = 0;
-
-	for (uint_t i = 0; i < input.dronesCount; i++)
+	for (auto&& drone : drones)
 	{
-		for (auto&& command : drones[i].commands)
-		{
-			commands++;
-			result.commands.emplace_back(command);
-		}
+		result.commands.insert(result.commands.begin(), drone.commands.begin(), drone.commands.end());
 	}
 
-	result.commandsCount = commands;
+	result.commandsCount = (uint_t)result.commands.size();
+
 	return result;
 }
