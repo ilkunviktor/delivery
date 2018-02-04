@@ -4,25 +4,47 @@
 #include <iostream>
 #include <fstream>
 #include <assert.h>
+#include <string>
 
 using namespace std;
 
+// Types
+// 1 ≤ number of rows ≤ 10000
+// 1 ≤ number of columns ≤ 10000
+// 1 ≤ D drones ≤ 1000
+// 1 ≤ maximum load of a drone ≤ 10000
+// 1 ≤ P product types ≤ 10000
+// 1 ≤ W warehouses ≤ 10000
+// value of products by type in warehouse => 0 ≤ number of items ≤ 10000
+// 1 ≤ C custom orders ≤ 10000
+// 1 ≤ L ordered products count in 1 order <= 10000
+using uint_t = uint16_t;
+// 1 ≤ deadline of the simulation ≤ 1000000
+using turns_t = uint32_t;
+
+struct Point
+{
+	uint_t row = 0;
+	uint_t column = 0;
+};
+
+struct Warehouse
+{
+	Point location;
+	vector<uint_t> productsCounts; // id => product type, value => number of items
+};
+
+struct drone
+{
+	Point location;
+	int focusedOnType;
+	int endOfCurrentMovement;
+	vector<std::string> commands;
+};
+
+
 int main()
 {
-	// Types
-	// 1 ≤ number of rows ≤ 10000
-	// 1 ≤ number of columns ≤ 10000
-	// 1 ≤ D drones ≤ 1000
-	// 1 ≤ maximum load of a drone ≤ 10000
-	// 1 ≤ P product types ≤ 10000
-	// 1 ≤ W warehouses ≤ 10000
-	// value of products by type in warehouse => 0 ≤ number of items ≤ 10000
-	// 1 ≤ C custom orders ≤ 10000
-	// 1 ≤ L ordered products count in 1 order <= 10000
-	using uint_t = uint16_t; 
-	// 1 ≤ deadline of the simulation ≤ 1000000
-	using turns_t = uint32_t;
-
 	uint_t rows = 0;
 	uint_t columns = 0;
 	uint_t dronesCount = 0; 
@@ -32,17 +54,6 @@ int main()
 	vector<uint_t> productWeights; // 1 ≤ weight ≤ maximum load of a drone
 	uint_t warehousesCount = 0;
 
-	struct Point
-	{
-		uint_t row = 0;
-		uint_t column = 0;
-	};
-
-	struct Warehouse
-	{
-		Point location;
-		vector<uint_t> productsCounts; // id => product type, value => number of items
-	};
 
 	vector<Warehouse> warehouses;
 	uint_t ordersCount;
@@ -114,18 +125,12 @@ int main()
 	inputFile.close();
 
 	// solve
-	struct drone
-	{
-		Point location;
-		int focusedOnType;
-		int endOfCurrentMovement;
-		vector<std::string> commands;
-	};
+	
 
-	vector<drone> drones;
+	vector<drone> drones = vector<drone>(dronesCount);
 	for (int i=0; i<dronesCount; i++)
 	{
-		drones[i].location = warehouses[i].location;
+		drones[i].location = warehouses[0].location;
 		drones[i].focusedOnType = 0;
 		drones[i].endOfCurrentMovement = 0;
 	}
@@ -161,7 +166,10 @@ int main()
 				// find warehouse to load type
 				for (int w = 0; w < warehousesCount; w ++)
 				{
-					
+					if (warehouses[w].productsCounts[drones[i].focusedOnType] >= itemsToLoad)
+					{
+						drones[i].commands.emplace_back(std::to_string(i) + " L " + std::to_string(w) + " " + std::to_string(drones[i].focusedOnType) + " " + std::to_string(itemsToLoad));						
+					}
 				}
 			}
 		}
@@ -176,4 +184,9 @@ int main()
 	resultFile.close();
 
 	return 0;
+}
+
+int distance(Point point1, Point point2)
+{
+	
 }
