@@ -43,6 +43,14 @@ struct drone
 };
 
 
+int distance(Point point1, Point point2)
+{
+	int diffRow = point1.row - point2.row;
+	int diffHeight = point2.column + point2.column;
+	return int(round(sqrt(diffRow) + sqrt(diffHeight)));
+}
+
+
 int main()
 {
 	uint_t rows = 0;
@@ -166,11 +174,16 @@ int main()
 				// find warehouse to load type
 				for (int w = 0; w < warehousesCount; w ++)
 				{
+					int min = 0;
 					if (warehouses[w].productsCounts[drones[i].focusedOnType] >= itemsToLoad)
 					{
-						drones[i].commands.emplace_back(std::to_string(i) + " L " + std::to_string(w) + " " + std::to_string(drones[i].focusedOnType) + " " + std::to_string(itemsToLoad));						
+						drones[i].commands.emplace_back(to_string(i) + " L " + to_string(w) + " " + to_string(drones[i].focusedOnType) + " " + to_string(itemsToLoad));
+						drones[i].endOfCurrentMovement += distance(drones[i].location, warehouses[w].location) + 1;						
+						break;
 					}
 				}
+
+
 			}
 		}
 
@@ -184,9 +197,4 @@ int main()
 	resultFile.close();
 
 	return 0;
-}
-
-int distance(Point point1, Point point2)
-{
-	
 }
