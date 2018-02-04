@@ -14,31 +14,28 @@ int distance(Point point1, Point point2)
 Result Solve(Input& input)
 {
 	Result result;
-	vector<Drone> drones = vector<Drone>(input.dronesCount);
-	
-	for (int i = 0; i<input.dronesCount; i++)
-	{
-		drones[i].location = input.warehouses[0].location;
-		drones[i].focusedOnType = 0;
-		drones[i].endOfCurrentMovement = 0;
-	}
+	Drone droneInit;
+	droneInit.location = input.warehouses[0].location;
+	vector<Drone> drones(input.dronesCount, droneInit);
 
-	turns_t currentTurn = 0;
-	while (currentTurn < input.turns)
+	turns_t turnCurrent = 0;
+
+	while (turnCurrent < input.turns)
 	{
-		for (int i = 0; i < input.dronesCount; i++)
+		for (uint_t i = 0; i < input.dronesCount; ++i)
 		{
-			if (drones[i].endOfCurrentMovement == currentTurn)
+			if (drones[i].endOfCurrentMovement == turnCurrent)
 			{
-				int currentTypeNeeded = 0;
-				while (currentTypeNeeded == 0)
+				uint_t productCountByType = 0;
+
+				while (productCountByType == 0)
 				{
-					for (int j = 0; j < input.ordersCount; j++)
+					for (uint_t j = 0; j < input.ordersCount; j++)
 					{
-						currentTypeNeeded += input.orders[j].items[drones[i].focusedOnType];
+						productCountByType += input.orders[j].items[drones[i].focusedOnType];
 					}
 
-					if (currentTypeNeeded == 0)
+					if (productCountByType == 0)
 					{
 						drones[i].focusedOnType++;
 						if (drones[i].focusedOnType == input.productTypesCount)
@@ -48,10 +45,10 @@ Result Solve(Input& input)
 					}
 				}
 
-				if (currentTypeNeeded > 0)
+				if (productCountByType > 0)
 				{
 					uint_t maxTypeCount = input.payload / input.productWeights[drones[i].focusedOnType];
-					uint_t droneLoadedItems = currentTypeNeeded > maxTypeCount ? maxTypeCount : currentTypeNeeded;
+					uint_t droneLoadedItems = productCountByType > maxTypeCount ? maxTypeCount : productCountByType;
 
 					// find warehouse to load type
 					for (int w = 0; w < input.warehousesCount; w++)
@@ -64,15 +61,16 @@ Result Solve(Input& input)
 							drones[i].endOfCurrentMovement += distance(drones[i].location, input.warehouses[w].location) + 1;
 							drones[i].location.row = input.warehouses[w].location.row;
 							drones[i].location.column = input.warehouses[w].location.column;
+
 							break;
-						}						
+						}
 					}
 
 					// find nearest orders to deliver
 					vector<int> ordersToDeliver;
 					for (int j = 0; j < input.ordersCount; j++)
 					{
-						if (input.orders[j].items[drones[i].focusedOnType]>0)
+						if (input.orders[j].items[drones[i].focusedOnType] > 0)
 						{
 							uint_t deliveredItems = input.orders[j].items[drones[i].focusedOnType] < droneLoadedItems ? input.orders[j].items[drones[i].focusedOnType] : droneLoadedItems;
 							droneLoadedItems -= deliveredItems;
@@ -94,18 +92,19 @@ Result Solve(Input& input)
 			}
 		}
 
-		currentTurn++;	
+		turnCurrent++;
 	}
 
 	int commands = 0;
-	for (int i =0; i< input.dronesCount; i++)
-	{		
+
+	for (int i = 0; i < input.dronesCount; i++)
+	{
 		for (auto &command : drones[i].commands)
 		{
 			commands++;
 			result.commands.emplace_back(command);
-		}		
-	}	
+		}
+	}
 
 	result.commandsCount = commands;
 	return result;
