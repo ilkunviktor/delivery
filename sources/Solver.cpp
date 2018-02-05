@@ -135,3 +135,20 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 
 	result->commandsCount = (uint_t)result->commands.size();
 }
+
+bool OrdersPriority(const Order& order1, const Order& order2)
+{
+	float orderItemsRatio = (float)order1.items.size() / (float)(order1.items.size() + order2.items.size();
+}
+
+void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& stateLast)
+{
+	result = make_shared<Result>();
+	stateLast = make_shared<State>();
+
+	stateLast->ordersCurrent = input.orders;
+
+	sort(stateLast->ordersCurrent.begin(), stateLast->ordersCurrent.end(), OrdersPriority);
+
+
+}

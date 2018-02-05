@@ -30,7 +30,8 @@ int main()
 		// solve
 		shared_ptr<Result> result;
 		shared_ptr<State> stateLast;
-		Solve(*init, result, stateLast);
+		//Solve(*init, result, stateLast);
+		Solve2(*init, result, stateLast);
 		// output
 		string timeCurrentStr = CalcTimeStr();
 		string resultPath = "../../data";
