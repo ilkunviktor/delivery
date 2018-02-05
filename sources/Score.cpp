@@ -1,16 +1,16 @@
 ﻿#include "StdAfx.h"
 #include "Score.h"
 
-uint_big_t ScoreFunc(const uint_big_t& turns, const uint_big_t& deliverTurn)
+uint_t ScoreFunc(const uint_t& simulationTurns, const uint_t& deliverTurn)
 {
-	uint_big_t score = (uint_big_t)ceil(100 * (double)(turns - deliverTurn) / (double)turns);
+	uint_t score = (uint_t)ceil(100 * (double)(simulationTurns - deliverTurn) / (double)simulationTurns);
 
 	return score;
 }
 
-uint_big_t Score(const State& stateLast)
+uint_t Score(const State& stateLast)
 {
-	uint_big_t result = 0;
+	uint_t result = 0;
 
 	for (const auto& order : stateLast.ordersCurrent)
 	{
@@ -18,6 +18,18 @@ uint_big_t Score(const State& stateLast)
 		{
 			result += ScoreFunc(stateLast.turnsCurrent, order.deliverTurn);
 		}
+	}
+
+	return result;
+}
+
+uint_t Score(const State2& stateLast)
+{
+	uint_t result = 0;
+
+	for (uint_t i = 0; i < stateLast.ordersDelivered; ++i)
+	{
+		result += ScoreFunc(stateLast.turnsCurrent, stateLast.orders[i].deliverTurn);
 	}
 
 	return result;

@@ -20,15 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sources\main.cpp" />
+    <ClCompile Include="..\sources\Neural.cpp" />
     <ClCompile Include="..\sources\Reader.cpp" />
     <ClCompile Include="..\sources\Result.cpp" />
     <ClCompile Include="..\sources\Score.cpp" />
     <ClCompile Include="..\sources\Solver.cpp" />
     <ClCompile Include="..\sources\Utils.cpp" />
     <ClCompile Include="..\sources\Writer.cpp" />
-    <ClCompile Include="Neural.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\sources\Neural.h" />
     <ClInclude Include="..\sources\Reader.h" />
     <ClInclude Include="..\sources\Result.h" />
     <ClInclude Include="..\sources\Score.h" />
@@ -38,7 +39,6 @@
     <ClInclude Include="..\sources\Init.h" />
     <ClInclude Include="..\sources\Utils.h" />
     <ClInclude Include="..\sources\Writer.h" />
-    <ClInclude Include="Neural.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

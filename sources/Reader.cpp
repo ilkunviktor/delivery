@@ -42,6 +42,7 @@ shared_ptr<Init> Read(const string& inputFilename)
 	for (uint_t i = 0; i < in->ordersCount; ++i)
 	{
 		Order order;
+		order.id = i;
 		inputFile >> order.location.row;
 		inputFile >> order.location.column;
 		inputFile >> order.productsCount;
@@ -51,6 +52,7 @@ shared_ptr<Init> Read(const string& inputFilename)
 			uint_t productType = 0;
 			inputFile >> productType;
 			++order.items[productType];
+			order.productsWeightTotal += in->productWeights[productType];
 		}
 
 		in->orders.emplace_back(order);

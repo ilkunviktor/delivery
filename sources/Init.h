@@ -9,10 +9,10 @@
 // value of products by type in warehouse => 0 ≤ number of items ≤ 10000
 // 1 ≤ C custom orders ≤ 10000
 // 1 ≤ L ordered products count in 1 order <= 10000
-using uint_t = uint16_t;
+using uint_t = uint32_t;
 // 1 ≤ deadline of the simulation ≤ 1000000
 // 10k custom orders * 100 = 1kk max score
-using uint_big_t = uint32_t;
+//using uint_t = uint32_t;
 
 enum class Action
 {
@@ -37,17 +37,21 @@ struct Warehouse
 enum class OrderState
 {
 	Pending,
+	Shipped,
 	Delivered
 };
 
 struct Order
 {
+	uint_t id = 0;
 	Point location;
-	uint_t productsCount;
+	uint_t productsCount = 0;
 	map<uint_t, uint_t> items; // key => product type, value => count
 
 	OrderState state = OrderState::Pending;
-	uint_big_t deliverTurn = 0;
+	uint_t deliverTurn = 0;
+
+	uint_t productsWeightTotal = 0;
 };
 
 struct Init
@@ -55,7 +59,7 @@ struct Init
 	uint_t rows = 0;
 	uint_t columns = 0;
 	uint_t dronesCount = 0;
-	uint_big_t turns = 0;
+	uint_t turns = 0;
 	uint_t payload = 0;
 	uint_t productTypesCount = 0;
 	vector<uint_t> productWeights; // 1 ≤ weight ≤ maximum load of a drone

@@ -27,7 +27,7 @@
     <ClCompile Include="..\sources\Score.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="Neural.cpp">
+    <ClCompile Include="..\sources\Neural.cpp">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClInclude Include="..\sources\Score.h">
       <Filter>sources</Filter>
     </ClInclude>
-    <ClInclude Include="Neural.h">
+    <ClInclude Include="..\sources\Neural.h">
       <Filter>sources</Filter>
     </ClInclude>
   </ItemGroup>

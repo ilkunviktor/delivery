@@ -81,8 +81,10 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 					{
 						if (stateLast->ordersCurrent[j].items[drones[i].focusedOnType] > 0)
 						{
-							uint_t deliveredItems = min(
-								stateLast->ordersCurrent[j].items[drones[i].focusedOnType], droneLoadedItems);
+							Order orderCurrent = stateLast->ordersCurrent[j];
+							uint_t focusedType = drones[i].focusedOnType;
+							uint_t itemWeight = orderCurrent.items[focusedType];
+							uint_t deliveredItems = min(itemWeight, droneLoadedItems);
 							droneLoadedItems -= deliveredItems;
 							stateLast->ordersCurrent[j].items[drones[i].focusedOnType] = stateLast->ordersCurrent[j].items[drones[i].focusedOnType] - deliveredItems;
 
@@ -136,19 +138,75 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 	result->commandsCount = (uint_t)result->commands.size();
 }
 
-bool OrdersPriority(const Order& order1, const Order& order2)
+/////////////////////////
+
+deque<OrderProduct> CreateOrdersProducts(const Order& order)
 {
-	float orderItemsRatio = (float)order1.items.size() / (float)(order1.items.size() + order2.items.size();
+	// order products priority 
+	deque<OrderProduct> result;
+
+	for (const auto& item : order.items)
+	{
+		for (uint_t i = 0; i < item.second; ++i)
+		{
+			OrderProduct orderProduct;
+			orderProduct.orderId = order.id;
+			orderProduct.productType = item.first;
+
+			assert(false); // add nearest warehouse and sub from them this item
+
+			result.emplace_back(orderProduct);
+		}
+	}
+
+	return result;
 }
 
-void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& stateLast)
+void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& stateLast)
 {
+	// init
 	result = make_shared<Result>();
-	stateLast = make_shared<State>();
+	stateLast = make_shared<State2>();
 
-	stateLast->ordersCurrent = input.orders;
+	stateLast->orders.insert(stateLast->orders.end(),
+		input.orders.begin(), input.orders.end());
+	stateLast->warehouses.insert(stateLast->warehouses.end(),
+		input.warehouses.begin(), input.warehouses.end());
+	
+	Drone2 droneInit;
+	droneInit.location = stateLast->warehouses[0].location;
+	stateLast->drones.resize(input.dronesCount, droneInit);
 
-	sort(stateLast->ordersCurrent.begin(), stateLast->ordersCurrent.end(), OrdersPriority);
+	// orders priority
+	sort(stateLast->orders.begin(), stateLast->orders.end(),
+		[&input](const Order& order1, const Order& order2) -> bool
+	{
+		return order1.productsWeightTotal < order2.productsWeightTotal;
+	});
 
+	for (uint_t i = 0; i < stateLast->orders.size(); ++i)
+	{
+		deque<OrderProduct> ordersProduct = CreateOrdersProducts(stateLast->orders[i]);
+		stateLast->ordersProductsPending.insert(
+			stateLast->ordersProductsPending.end(), ordersProduct.begin(), ordersProduct.end());
+	}
 
+	while (stateLast->ordersDelivered < stateLast->orders.size() ||
+		stateLast->turnsCurrent < input.turns)
+	{
+		for (auto&& drone : stateLast->drones)
+		{
+			if (!stateLast->ordersProductsPending.empty())
+			{
+				if (drone.state != DroneState::Active)
+				{
+
+				}
+			}
+
+			++drone.actionCurrentTurns;
+		}
+
+		++stateLast->turnsCurrent;
+	}
 }

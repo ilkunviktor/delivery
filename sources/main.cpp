@@ -4,9 +4,12 @@
 #include "Writer.h"
 #include "Utils.h"
 #include "Score.h"
+#include "Neural.h"
 
 int main()
 {
+	g_neuralFactors.itemsRation = 0.5f;
+
 	string tasksPath = "../../data/task";
 	uint_t scoreTotal = 0;
 	int64_t millisecondsTotal = 0;
@@ -29,8 +32,9 @@ int main()
 		shared_ptr<Init> init = Read(inputFilename);
 		// solve
 		shared_ptr<Result> result;
-		shared_ptr<State> stateLast;
+		//shared_ptr<State> stateLast;
 		//Solve(*init, result, stateLast);
+		shared_ptr<State2> stateLast;
 		Solve2(*init, result, stateLast);
 		// output
 		string timeCurrentStr = CalcTimeStr();
