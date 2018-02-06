@@ -57,6 +57,9 @@ struct Order
 	uint_t deliverTurn = 0;
 
 	uint_t productsWeightTotal = 0;
+
+	multimap<uint_t, shared_ptr<Warehouse>> warehousesNearest; // key => distance
+	uint_t distanceForDeliverMin = -1;
 };
 
 struct Init
@@ -69,7 +72,7 @@ struct Init
 	uint_t productTypesCount = 0;
 	vector<uint_t> productWeights; // 1 ≤ weight ≤ maximum load of a drone
 	uint_t warehousesCount = 0;
-	vector<Warehouse> warehouses;
+	vector<shared_ptr<Warehouse>> warehouses; // will be empty product counts after simulation
 	uint_t ordersCount;
 	vector<Order> orders;
 };

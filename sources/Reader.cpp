@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Reader.h"
+#include "Solver.h"
 
 shared_ptr<Init> Read(const string& inputFilename)
 {
@@ -23,16 +24,16 @@ shared_ptr<Init> Read(const string& inputFilename)
 
 	for (uint_t i = 0; i < in->warehousesCount; ++i)
 	{
-		Warehouse warehouse;
-		warehouse.id = i;
-		inputFile >> warehouse.location.row;
-		inputFile >> warehouse.location.column;
+		shared_ptr<Warehouse> warehouse = make_shared<Warehouse>();
+		warehouse->id = i;
+		inputFile >> warehouse->location.row;
+		inputFile >> warehouse->location.column;
 
 		for (uint_t j = 0; j < in->productTypesCount; ++j)
 		{
 			uint_t productTypeCount = 0;
 			inputFile >> productTypeCount;
-			warehouse.productsCounts.emplace_back(productTypeCount);
+			warehouse->productsCounts.emplace_back(productTypeCount);
 		}
 
 		in->warehouses.emplace_back(warehouse);
@@ -53,7 +54,6 @@ shared_ptr<Init> Read(const string& inputFilename)
 			uint_t productType = 0;
 			inputFile >> productType;
 			++order.items[productType];
-			order.productsWeightTotal += in->productWeights[productType];
 		}
 
 		in->orders.emplace_back(order);
