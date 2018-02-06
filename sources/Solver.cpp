@@ -196,8 +196,6 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 		stateLast->drones.emplace_back(droneInit);
 	}
 
-	// 1. productsWeightTotal
-
 	// copy orders
 	for (const auto& order : input.orders)
 	{
@@ -262,6 +260,7 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 		}
 
 		assert(!warehousesForFlight.empty());
+
 		// find deliver distance from order location to all nearest warehouse of order. from near to far warehouse
 		order->distanceForDeliverMin = 0;
 		Point locationLast = order->location;
