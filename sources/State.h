@@ -40,7 +40,6 @@ struct State2
 	deque<shared_ptr<Order>> orders; // by id
 	vector<shared_ptr<Warehouse>> warehouses;
 	deque<shared_ptr<OrderSub>> ordersSubPending;
-	uint_t ordersProductsPendingId = 0;
 	uint_t ordersDelivered = 0;
 	uint_t turnsCurrent = 0;
 };
