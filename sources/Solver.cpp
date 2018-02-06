@@ -317,11 +317,6 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 
 			// drone lifecycle: wait 0..* => load 1..* => deliver 1..* (for 1 same order) => wait 0..* ...
 
-			if (drone->id == 2)
-			{
-				int a = 2 + 3;
-			}
-
 			if (drone->commandsPending.empty())
 			{
 				++drone->turnsWaited;
