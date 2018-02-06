@@ -242,7 +242,7 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 			if (drone->commandsPending.empty() && !stateLast->ordersSubPending.empty())
 			{
 				deque<shared_ptr<OrderSub>> ordersSubForDrone;
-				uint_t weightFree = input.payload;
+				uint_t weightCurrent = 0;
 				uint_t orderId = -1; // max of uint_t
 
 				while (!stateLast->ordersSubPending.empty())
@@ -250,18 +250,17 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 					shared_ptr<OrderSub> orderSub = *stateLast->ordersSubPending.begin();
 					uint_t orderWeight = input.productWeights[orderSub->productType];
 
-					if (!ordersSubForDrone.empty())
+					if (ordersSubForDrone.empty())
 					{
-						shared_ptr<OrderSub> orderSubPrevious = *ordersSubForDrone.begin();
-						orderId = orderSubPrevious->orderId;
+						orderId = orderSub->orderId;
 					}
 
-					if ((!ordersSubForDrone.empty() && orderId == orderSub->orderId) || // same order
-						weightFree >= orderWeight)
+					if (!(!ordersSubForDrone.empty() && orderId != orderSub->orderId) && // if same order then break
+						weightCurrent + orderWeight <= input.payload)
 					{
 						// add order sub
 						ordersSubForDrone.emplace_back(orderSub);
-						weightFree -= orderWeight;
+						weightCurrent += orderWeight;
 						stateLast->ordersSubPending.pop_front();
 					}
 					else
