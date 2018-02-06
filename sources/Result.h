@@ -11,10 +11,11 @@ struct Command
 	uint_t turnsCount = 0;
 
 	string Str() const;
+
+	uint_t turnsCurrent = 0;
 };
 
 struct Result
 {
-	uint_t commandsCount = 0;
-	vector<Command> commands;
+	vector<shared_ptr<Command>> commands;
 };

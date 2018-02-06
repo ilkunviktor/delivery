@@ -3,13 +3,14 @@
 
 uint_t CalcDistance(const Point& point1, const Point& point2)
 {
-	int diffRow = point1.row - point2.row;
-	int diffHeight = point2.column + point2.column;
-	uint_t dist = (uint_t)ceil(sqrt(diffRow) + sqrt(diffHeight));
+	int diffRow = point2.row - point1.row;
+	int diffHeight = point2.column - point1.column;
+	uint_t dist = (uint_t)ceil(sqrt(diffRow * diffRow + diffHeight * diffHeight));
 
 	return dist;
 }
 
+/*
 void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& stateLast)
 {
 	result = make_shared<Result>();
@@ -134,28 +135,52 @@ void Solve(const Init& input, shared_ptr<Result>& result, shared_ptr<State>& sta
 	{
 		result->commands.insert(result->commands.begin(), drone.commands.begin(), drone.commands.end());
 	}
-
-	result->commandsCount = (uint_t)result->commands.size();
 }
-
+*/
 /////////////////////////
 
-deque<OrderProduct> CreateOrdersProducts(const Order& order)
+deque<shared_ptr<OrderSub>> CreateOrdersSub(vector<shared_ptr<Warehouse>>& warehouses, const shared_ptr<Order>& order)
 {
-	// order products priority 
-	deque<OrderProduct> result;
+	// orders sub priority here
+	deque<shared_ptr<OrderSub>> result;
 
-	for (const auto& item : order.items)
+	// sort nearest warehouse to order
+	multimap<uint_t, shared_ptr<Warehouse>> warehousesNearest; // key => distance
+
+	for (auto&& warehouse : warehouses)
+	{
+		uint_t distance = CalcDistance(order->location, warehouse->location);
+		warehousesNearest.insert({distance, warehouse});
+	}
+
+	for (const auto& item : order->items)
 	{
 		for (uint_t i = 0; i < item.second; ++i)
 		{
-			OrderProduct orderProduct;
-			orderProduct.orderId = order.id;
-			orderProduct.productType = item.first;
+			shared_ptr<OrderSub> orderSub = make_shared<OrderSub>();
+			orderSub->orderId = order->id;
+			orderSub->productType = item.first;
 
-			assert(false); // add nearest warehouse and sub from them this item
+			// find product in nearest warehouse and sub from them this product
+			bool warehouseSet = false;
 
-			result.emplace_back(orderProduct);
+			for (auto it = warehousesNearest.begin(); it != warehousesNearest.end(); ++it)
+			{
+				shared_ptr<Warehouse> warehouseNearest = it->second;
+
+				if (warehouseNearest->productsCounts[orderSub->productType] > 0)
+				{
+					--warehouseNearest->productsCounts[orderSub->productType];
+					orderSub->warehouseId = warehouseNearest->id;
+					warehouseSet = true;
+
+					break;
+				}
+			}
+
+			assert(warehouseSet);
+
+			result.emplace_back(orderSub);
 		}
 	}
 
@@ -168,45 +193,177 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 	result = make_shared<Result>();
 	stateLast = make_shared<State2>();
 
-	stateLast->orders.insert(stateLast->orders.end(),
-		input.orders.begin(), input.orders.end());
-	stateLast->warehouses.insert(stateLast->warehouses.end(),
-		input.warehouses.begin(), input.warehouses.end());
-	
-	Drone2 droneInit;
-	droneInit.location = stateLast->warehouses[0].location;
-	stateLast->drones.resize(input.dronesCount, droneInit);
-
-	// orders priority
-	sort(stateLast->orders.begin(), stateLast->orders.end(),
-		[&input](const Order& order1, const Order& order2) -> bool
+	for (const auto& order : input.orders)
 	{
-		return order1.productsWeightTotal < order2.productsWeightTotal;
-	});
-
-	for (uint_t i = 0; i < stateLast->orders.size(); ++i)
-	{
-		deque<OrderProduct> ordersProduct = CreateOrdersProducts(stateLast->orders[i]);
-		stateLast->ordersProductsPending.insert(
-			stateLast->ordersProductsPending.end(), ordersProduct.begin(), ordersProduct.end());
+		shared_ptr<Order> orderPtr = make_shared<Order>(order);
+		stateLast->orders.emplace_back(orderPtr);
 	}
 
-	while (stateLast->ordersDelivered < stateLast->orders.size() ||
+	for (const auto& warehouse : input.warehouses)
+	{
+		shared_ptr<Warehouse> warehousePtr = make_shared<Warehouse>(warehouse);
+		stateLast->warehouses.emplace_back(warehousePtr);
+	}
+
+	// create drones
+	for (uint_t droneId = 0; droneId < input.dronesCount; ++droneId)
+	{
+		shared_ptr<Drone2> droneInit = make_shared<Drone2>();
+		droneInit->id = droneId;
+		droneInit->location = stateLast->warehouses[0]->location;
+		stateLast->drones.emplace_back(droneInit);
+	}
+
+	// orders priority here
+	deque<shared_ptr<Order>> ordersSorted;
+	copy(stateLast->orders.begin(), stateLast->orders.end(), back_inserter(ordersSorted));
+	sort(ordersSorted.begin(), ordersSorted.end(),
+		[&input](const shared_ptr<Order>& order1, const shared_ptr<Order>& order2) -> bool
+	{
+		return order1->productsWeightTotal < order2->productsWeightTotal;
+	});
+	
+	// create orders sub
+	for (auto&& orderSorted : ordersSorted)
+	{
+		deque<shared_ptr<OrderSub>> ordersProduct = CreateOrdersSub(stateLast->warehouses, orderSorted);
+		stateLast->ordersSubPending.insert(
+			stateLast->ordersSubPending.end(), ordersProduct.begin(), ordersProduct.end());
+	}
+
+	while (stateLast->ordersDelivered < stateLast->orders.size() &&
 		stateLast->turnsCurrent < input.turns)
 	{
+		++stateLast->turnsCurrent;
+
 		for (auto&& drone : stateLast->drones)
 		{
-			if (!stateLast->ordersProductsPending.empty())
+			// try to fill drone of orders sub of SAME order. And fill them to max payload of drone
+			if (drone->commandsPending.empty() && !stateLast->ordersSubPending.empty())
 			{
-				if (drone.state != DroneState::Active)
+				deque<shared_ptr<OrderSub>> ordersSubForDrone;
+				uint_t weightFree = input.payload;
+				uint_t orderId = -1; // max of uint_t
+
+				while (!stateLast->ordersSubPending.empty())
 				{
+					shared_ptr<OrderSub> orderSub = *stateLast->ordersSubPending.begin();
+					uint_t orderWeight = input.productWeights[orderSub->productType];
+
+					if (!ordersSubForDrone.empty())
+					{
+						shared_ptr<OrderSub> orderSubPrevious = *ordersSubForDrone.begin();
+						orderId = orderSubPrevious->orderId;
+					}
+
+					if ((!ordersSubForDrone.empty() && orderId == orderSub->orderId) || // same order
+						weightFree >= orderWeight)
+					{
+						// add order sub
+						ordersSubForDrone.emplace_back(orderSub);
+						weightFree -= orderWeight;
+						stateLast->ordersSubPending.pop_front();
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				// create drone pending commands, only load and deliver
+				if (!ordersSubForDrone.empty())
+				{
+					// create load commands
+					for (const auto& ordersSub : ordersSubForDrone)
+					{
+						shared_ptr<Command> command = make_shared<Command>();
+						command->droneId = drone->id;
+						command->action = Action::Load;
+						command->objectId = ordersSub->warehouseId;
+						command->productType = ordersSub->productType;
+						command->productCount = 1;
+						Point warehouseLocation = stateLast->warehouses[command->objectId]->location;
+						uint_t moveDistance = drone->location == warehouseLocation ? 0 : CalcDistance(drone->location, warehouseLocation);
+						command->turnsCount = moveDistance + 1; // + 1 for loading
+
+						drone->location = warehouseLocation;
+						drone->commandsPending.emplace_back(command);
+					}
+
+#pragma message ("todo: add analyze load commands for merging product counts!")
+
+					// create delivery commands
+					Point orderLocation = stateLast->orders[orderId]->location;
+
+					for (const auto& ordersSub : ordersSubForDrone)
+					{
+						shared_ptr<Command> command = make_shared<Command>();
+						command->droneId = drone->id;
+						command->action = Action::Deliver;
+						command->objectId = orderId;
+						command->productType = ordersSub->productType;
+						command->productCount = 1;
+						uint_t deliverDistance = drone->location == orderLocation ? 0 : CalcDistance(drone->location, orderLocation);
+						command->turnsCount = deliverDistance + 1; // + 1 for deliver
+
+						drone->location = orderLocation;
+						drone->commandsPending.emplace_back(command);
+					}
+
+#pragma message ("todo: add analyze deliver commands for merging product counts!")
 
 				}
 			}
 
-			++drone.actionCurrentTurns;
-		}
+			// drone lifecycle: wait 0..* => load 1..* => deliver 1..* (for 1 same order) => wait 0..* ...
 
-		++stateLast->turnsCurrent;
+			if (drone->id == 2)
+			{
+				int a = 2 + 3;
+			}
+
+			if (drone->commandsPending.empty())
+			{
+				++drone->turnsWaited;
+			}
+			else
+			{
+				// result wait command
+				if (drone->turnsWaited > 0)
+				{
+					shared_ptr<Command> command = make_shared<Command>();
+					command->droneId = drone->id;
+					command->action = Action::Wait;
+					command->turnsCount = drone->turnsWaited;
+					result->commands.push_back(command);
+
+					drone->turnsWaited = 0;
+				}
+
+				// result load or delivery command
+				shared_ptr<Command> commandPending = *drone->commandsPending.begin();
+				++commandPending->turnsCurrent;
+
+				if (commandPending->turnsCurrent == commandPending->turnsCount)
+				{
+					result->commands.push_back(commandPending);
+					drone->commandsPending.pop_front();
+
+					// check deliver order (fill for scoring)
+					if (commandPending->action == Action::Deliver)
+					{
+						shared_ptr<Order> order = stateLast->orders[commandPending->objectId];
+						order->productsCount -= commandPending->productCount;
+
+						if (order->productsCount == 0)
+						{
+							order->state = OrderState::Delivered;
+							order->deliverTurn = stateLast->turnsCurrent;
+							++stateLast->ordersDelivered;
+						}
+					}
+				}
+			}
+		}
 	}
 }

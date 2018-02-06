@@ -42,7 +42,7 @@ int main()
 		string resultFileName = resultPath + "/" + taskStr + "_" + timeCurrentStr + ".out";
 		Write(*result, resultFileName);
 		// score
-		uint_t score = Score(*stateLast);
+		uint_t score = Score(stateLast, init->turns);
 		scoreTotal += score;
 		// timing
 		chrono::time_point<std::chrono::system_clock> timeEnd =

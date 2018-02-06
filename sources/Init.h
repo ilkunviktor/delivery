@@ -16,20 +16,26 @@ using uint_t = uint32_t;
 
 enum class Action
 {
+	Wait,
 	Load,
 	Deliver,
 	Unload,
-	Wait
 };
 
 struct Point
 {
 	uint_t row = 0;
 	uint_t column = 0;
+
+	bool operator==(const Point& b)
+	{
+		return row == b.row && column == b.column;
+	}
 };
 
 struct Warehouse
 {
+	uint_t id = 0;
 	Point location;
 	vector<uint_t> productsCounts; // id => product type, value => number of items
 };
@@ -37,7 +43,6 @@ struct Warehouse
 enum class OrderState
 {
 	Pending,
-	Shipped,
 	Delivered
 };
 

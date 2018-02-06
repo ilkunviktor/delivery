@@ -24,6 +24,7 @@ shared_ptr<Init> Read(const string& inputFilename)
 	for (uint_t i = 0; i < in->warehousesCount; ++i)
 	{
 		Warehouse warehouse;
+		warehouse.id = i;
 		inputFile >> warehouse.location.row;
 		inputFile >> warehouse.location.column;
 

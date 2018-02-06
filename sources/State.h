@@ -18,37 +18,28 @@ struct State
 
 /////////////
 
-struct OrderProduct
+struct OrderSub // contain one product
 {
 	uint_t orderId = 0;
 	uint_t warehouseId = 0;
 	uint_t productType = 0;
 };
 
-enum class DroneState
-{
-	Pending,
-	Active
-};
-
 struct Drone2
 {
-	Point location;
-	Action action = Action::Wait;
-	DroneState state = DroneState::Pending;
-	deque<OrderProduct> ordersProducts;
-	uint_t targetActionTurns = 0;
-	uint_t actionCurrentTurns = 0;
+	uint_t id = 0;
+	Point location; // not actual, last location after deliver
+	uint_t turnsWaited = 0;
 
-	vector<Command> commands;
+	deque<shared_ptr<Command>> commandsPending;
 };
 
 struct State2
 {
-	vector<Drone2> drones;
-	deque<Order> orders;
-	vector<Warehouse> warehouses;
-	deque<OrderProduct> ordersProductsPending;
+	vector<shared_ptr<Drone2>> drones;
+	deque<shared_ptr<Order>> orders; // by id
+	vector<shared_ptr<Warehouse>> warehouses;
+	deque<shared_ptr<OrderSub>> ordersSubPending;
 	uint_t ordersProductsPendingId = 0;
 	uint_t ordersDelivered = 0;
 	uint_t turnsCurrent = 0;

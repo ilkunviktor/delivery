@@ -8,7 +8,7 @@ uint_t ScoreFunc(const uint_t& simulationTurns, const uint_t& deliverTurn)
 	return score;
 }
 
-uint_t Score(const State& stateLast)
+uint_t Score(const State& stateLast, uint_t turnsTotal)
 {
 	uint_t result = 0;
 
@@ -16,20 +16,23 @@ uint_t Score(const State& stateLast)
 	{
 		if (order.state == OrderState::Delivered)
 		{
-			result += ScoreFunc(stateLast.turnsCurrent, order.deliverTurn);
+			result += ScoreFunc(turnsTotal, order.deliverTurn);
 		}
 	}
 
 	return result;
 }
 
-uint_t Score(const State2& stateLast)
+uint_t Score(const shared_ptr<State2>& stateLast, uint_t turnsTotal)
 {
 	uint_t result = 0;
 
-	for (uint_t i = 0; i < stateLast.ordersDelivered; ++i)
+	for (const auto& order : stateLast->orders)
 	{
-		result += ScoreFunc(stateLast.turnsCurrent, stateLast.orders[i].deliverTurn);
+		if (order->state == OrderState::Delivered)
+		{
+			result += ScoreFunc(turnsTotal, order->deliverTurn);
+		}
 	}
 
 	return result;
