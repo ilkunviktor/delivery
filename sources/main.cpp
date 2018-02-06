@@ -37,9 +37,10 @@ int main()
 		shared_ptr<State2> stateLast;
 		Solve2(*init, result, stateLast);
 		// output
-		string timeCurrentStr = CalcTimeStr();
+		//string timeCurrentStr = CalcTimeStr();
 		string resultPath = "../../data";
-		string resultFileName = resultPath + "/" + taskStr + "_" + timeCurrentStr + ".out";
+		//string resultFileName = resultPath + "/" + taskStr + "_" + timeCurrentStr + ".out";
+		string resultFileName = resultPath + "/" + taskStr + ".out";
 		Write(*result, resultFileName);
 		// score
 		uint_t score = Score(stateLast, init->turns);
