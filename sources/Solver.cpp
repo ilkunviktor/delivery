@@ -278,8 +278,8 @@ void Solve2(const Init& input, shared_ptr<Result>& result, shared_ptr<State2>& s
 	sort(ordersSorted.begin(), ordersSorted.end(),
 		[](const shared_ptr<Order>& order1, const shared_ptr<Order>& order2) -> bool
 	{
-		// close to 0 => order1 => result false
-		// close to 1 => order2 => result true
+		// close to 0 => order1 => result true
+		// close to 1 => order2 => result false
 		// sum of factors => 1
 		float productWeightFactor = 0.7f;
 		float distanceMinFactor = 0.3f;
