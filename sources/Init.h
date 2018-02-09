@@ -31,6 +31,11 @@ struct Point
 	{
 		return row == b.row && column == b.column;
 	}
+
+	bool operator!=(const Point& b)
+	{
+		return !operator==(b);
+	}
 };
 
 struct Warehouse
@@ -50,8 +55,10 @@ struct Order
 {
 	uint_t id = 0;
 	Point location;
-	uint_t productsCount = 0;
+	uint_t productsCountPending = 0;
+	uint_t productsCountDelivered = 0;
 	map<uint_t, uint_t> items; // key => product type, value => count
+	uint_t productsCountTotal = 0;
 
 	OrderState state = OrderState::Pending;
 	uint_t deliverTurn = 0;
@@ -59,7 +66,7 @@ struct Order
 	uint_t productsWeightTotal = 0;
 
 	multimap<uint_t, shared_ptr<Warehouse>> warehousesNearest; // key => distance
-	uint_t distanceForDeliverMin = -1;
+	uint_t deliverTurnsMin = -1;
 };
 
 struct Init
@@ -72,7 +79,7 @@ struct Init
 	uint_t productTypesCount = 0;
 	vector<uint_t> productWeights; // 1 ≤ weight ≤ maximum load of a drone
 	uint_t warehousesCount = 0;
-	vector<shared_ptr<Warehouse>> warehouses; // will be empty product counts after simulation
+	vector<Warehouse> warehouses; // will be empty product counts after simulation
 	uint_t ordersCount;
 	vector<Order> orders;
 };

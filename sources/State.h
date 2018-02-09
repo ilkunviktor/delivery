@@ -23,6 +23,10 @@ struct OrderSub // contain one product
 	uint_t orderId = 0;
 	uint_t warehouseId = 0;
 	uint_t productType = 0;
+
+	// order sub can contain one product
+	// we will analyze later merging of orders sub to load several products from 1 warehouse in 1 turn
+	static const uint_t productCount = 1;
 };
 
 struct Drone2
@@ -38,7 +42,8 @@ struct State2
 {
 	vector<shared_ptr<Drone2>> drones;
 	deque<shared_ptr<Order>> orders; // by id
-	deque<shared_ptr<OrderSub>> ordersSubPending;
+	deque<shared_ptr<Warehouse>> warehouses; // by id
+	deque<shared_ptr<Order>> ordersPending;
 	uint_t ordersDelivered = 0;
 	uint_t turnsCurrent = 0;
 };

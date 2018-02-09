@@ -24,16 +24,16 @@ shared_ptr<Init> Read(const string& inputFilename)
 
 	for (uint_t i = 0; i < in->warehousesCount; ++i)
 	{
-		shared_ptr<Warehouse> warehouse = make_shared<Warehouse>();
-		warehouse->id = i;
-		inputFile >> warehouse->location.row;
-		inputFile >> warehouse->location.column;
+		Warehouse warehouse;
+		warehouse.id = i;
+		inputFile >> warehouse.location.row;
+		inputFile >> warehouse.location.column;
 
 		for (uint_t j = 0; j < in->productTypesCount; ++j)
 		{
 			uint_t productTypeCount = 0;
 			inputFile >> productTypeCount;
-			warehouse->productsCounts.emplace_back(productTypeCount);
+			warehouse.productsCounts.emplace_back(productTypeCount);
 		}
 
 		in->warehouses.emplace_back(warehouse);
@@ -47,9 +47,9 @@ shared_ptr<Init> Read(const string& inputFilename)
 		order.id = i;
 		inputFile >> order.location.row;
 		inputFile >> order.location.column;
-		inputFile >> order.productsCount;
+		inputFile >> order.productsCountTotal;
 
-		for (uint_t j = 0; j < order.productsCount; ++j)
+		for (uint_t j = 0; j < order.productsCountTotal; ++j)
 		{
 			uint_t productType = 0;
 			inputFile >> productType;
