@@ -10,12 +10,13 @@ int main()
 {
 	g_neuralFactors.itemsRation = 0.5f;
 
-	string tasksPath = "../../data/task";
+	string taskPath = "../../data/task";
+	string resultPath = "../../data/result";
 	uint_t scoreTotal = 0;
 	int64_t millisecondsTotal = 0;
 
 	// iterate over tasks
-	for (const auto& taskPath : experimental::filesystem::v1::directory_iterator(tasksPath))
+	for (const auto& taskPath : experimental::filesystem::v1::directory_iterator(taskPath))
 	{
 		// timing
 		chrono::time_point<std::chrono::system_clock> timeStart =
@@ -38,7 +39,6 @@ int main()
 		Solve2(*init, result, stateLast);
 		// output
 		//string timeCurrentStr = CalcTimeStr();
-		string resultPath = "../../data";
 		//string resultFileName = resultPath + "/" + taskStr + "_" + timeCurrentStr + ".out";
 		string resultFileName = resultPath + "/" + taskStr + ".out";
 		Write(*result, resultFileName);
