@@ -2,22 +2,6 @@
 #include "Init.h"
 #include "Result.h"
 
-struct Drone
-{
-	Point location;
-	uint_t focusedOnType = 0;
-	uint_t endOfCurrentMovement = 0;
-	vector<Command> commands;
-};
-
-struct State
-{
-	vector<Order> ordersCurrent;
-	uint_t turnsCurrent = 0;
-};
-
-/////////////
-
 struct OrderSub // contain one product
 {
 	uint_t orderId = 0;

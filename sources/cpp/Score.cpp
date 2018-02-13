@@ -8,21 +8,6 @@ uint_t ScoreFunc(const uint_t& simulationTurns, const uint_t& deliverTurn)
 	return score;
 }
 
-uint_t Score(const State& stateLast, uint_t turnsTotal)
-{
-	uint_t result = 0;
-
-	for (const auto& order : stateLast.ordersCurrent)
-	{
-		if (order.state == OrderState::Delivered)
-		{
-			result += ScoreFunc(turnsTotal, order.deliverTurn);
-		}
-	}
-
-	return result;
-}
-
 uint_t Score(const shared_ptr<State2>& stateLast, uint_t turnsTotal)
 {
 	uint_t result = 0;
